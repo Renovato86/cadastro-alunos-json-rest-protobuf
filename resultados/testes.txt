@@ -1,0 +1,10 @@
+Execução: 25/10/2026
+JDK 25.0.1 | Maven 3.9.11 | Spring Boot 3.5.16 | Protobuf 4.36.2
+Comando: mvn clean verify (Maven Wrapper equivalente: .\mvnw.cmd clean verify)
+
+br.edu.atividade.alunos.AlunoApiTest: tests=17, failures=0, errors=0, skipped=0
+br.edu.atividade.alunos.SerializacaoTest: tests=3, failures=0, errors=0, skipped=0
+
+TOTAL: {"tests": 20, "failures": 0, "errors": 0, "skipped": 0}
+BUILD SUCCESS
+Teste adicional: cinco requisições com curl e cliente Java com POST 201 e GET 200.
