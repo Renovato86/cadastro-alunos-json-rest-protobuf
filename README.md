@@ -11,7 +11,7 @@ mvn clean package
 mvn spring-boot:run
 ```
 
-O servidor abre em `http://localhost:8080`. A página inicial tem formulário de cadastro, lista dos alunos e busca por ID, nome ou curso. A lista é atualizada automaticamente a cada cinco segundos enquanto a página está visível. IDs repetidos pedem confirmação na página antes de substituir o cadastro. A API permite IDs inteiros positivos (até 2147483647) e exige nome e curso preenchidos. Os dados ficam na memória e somem ao encerrar. Para parar, use Ctrl+C.
+O servidor atende em `http://localhost:8080`. Use o cliente de terminal abaixo para cadastrar, listar e consultar alunos. Os dados ficam na memória e somem ao encerrar. Para parar, use Ctrl+C.
 
 Em outro terminal, teste com curl:
 
@@ -49,23 +49,45 @@ A contagem usa JSON compacto em UTF-8 e Protobuf binário, sem cabeçalhos HTTP.
 
 JSON é útil em APIs REST pela facilidade de leitura e integração. Protobuf pode ser útil quando os sistemas compartilham o contrato e precisam transmitir menos bytes. Nesta atividade a API usa JSON, e Protobuf é usado na comparação.
 
+## Menu no terminal
+
+Com o servidor Java aberto, inicie outro PowerShell na pasta do projeto:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cliente.ps1 -Servidor http://localhost:8080
+```
+
+O menu oferece:
+
+1. Cadastrar aluno (pede ID, nome e curso).
+2. Listar todos os alunos.
+3. Consultar um aluno pelo ID.
+0. Sair do cliente sem encerrar o servidor.
+
+Use IDs inteiros positivos (1 a 2147483647), nome e curso preenchidos. Um ID repetido pede confirmação antes de substituir os dados. O cliente envia JSON em UTF-8 e funciona no Windows PowerShell 5.1 ou PowerShell 7. A opção de execução vale apenas para o processo iniciado pelo comando.
+
 ## Usar em dois computadores
 
-No computador principal, execute na pasta do projeto e deixe o terminal aberto:
+No principal, execute e deixe o terminal aberto:
 
 ```powershell
 mvn spring-boot:run "-Dspring-boot.run.arguments=--server.address=0.0.0.0"
 ```
 
-No principal, abra `http://localhost:8080/`. No segundo computador, conectado à mesma rede ou Radmin VPN, abra `http://IP_DO_PRINCIPAL:8080/`, substituindo o IP. Não é necessário instalar Java ou Maven no segundo computador. Libere a porta TCP 8080 no firewall do principal para a conexão utilizada se o acesso for bloqueado.
+No segundo computador, conectado à mesma rede ou Radmin VPN, execute o cliente:
 
-Os dois computadores devem acessar o mesmo servidor para compartilhar a lista. Reiniciar o servidor apaga os cadastros, pois o armazenamento continua em memória. A tela e a API usam JSON; a comparação com Protobuf permanece separada.
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cliente.ps1 -Servidor http://IP_DO_PRINCIPAL:8080
+```
 
-### Rotas
+Substitua IP_DO_PRINCIPAL pelo IPv4 do principal no Radmin VPN. Basta copiar `cliente.ps1` para o segundo computador; ele não precisa de Java nem Maven. No principal, o cliente deve ficar em outro terminal, separado do servidor. Se necessário, libere TCP 8080 no firewall para a conexão utilizada.
 
-- `GET /`: formulário e lista.
-- `GET /alunos`: lista em JSON, ordenada pelo ID.
-- `GET /alunos/{id}`: consulta um aluno; retorna 404 se não existir.
-- `POST /alunos`: cadastra (201) ou substitui um ID existente (200). Retorna 400 para ID inválido ou nome/curso em branco.
+Os dois clientes acessam a mesma API. Escolha listar ou consultar para obter os dados atuais; não há atualização automática do terminal. Os cadastros continuam em memória e somem quando o servidor é encerrado. Sair apenas do cliente não apaga os dados.
 
-A confirmação de substituição é uma conveniência da página. A API mantém o comportamento de substituir um ID repetido; se dois computadores gravarem o mesmo ID simultaneamente, vale a última gravação.
+### Rotas da API JSON
+
+- `GET /alunos`: lista em JSON ordenada por ID.
+- `GET /alunos/{id}`: consulta; retorna 404 se não existir.
+- `POST /alunos`: cadastra (201) ou substitui ID existente (200). ID inválido ou nome/curso em branco retorna 400.
+
+A API substitui IDs repetidos. A confirmação pertence ao cliente; em gravações simultâneas para o mesmo ID, vale a última gravação. A comparação JSON/Protobuf continua separada da API. Este projeto não inclui interface web.
