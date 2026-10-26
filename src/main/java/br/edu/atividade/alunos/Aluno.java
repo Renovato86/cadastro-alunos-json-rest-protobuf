@@ -1,16 +1,40 @@
 package br.edu.atividade.alunos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+public class Aluno {
+    private int id;
+    private String nome;
+    private String curso;
 
-// Um record é uma classe Java imutável; Jackson serializa seus componentes.
-public record Aluno(
-        @NotNull(message = "id é obrigatório")
-        @Positive(message = "id deve ser positivo") Integer id,
-        @NotBlank(message = "nome é obrigatório")
-        @Size(max = 120, message = "nome deve ter até 120 caracteres") String nome,
-        @NotBlank(message = "curso é obrigatório")
-        @Size(max = 120, message = "curso deve ter até 120 caracteres") String curso) {
+    public Aluno() {
+    }
+
+    public Aluno(int id, String nome, String curso) {
+        this.id = id;
+        this.nome = nome;
+        this.curso = curso;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCurso() {
+        return curso;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
 }

@@ -1,36 +1,30 @@
 package br.edu.atividade.alunos;
 
 import java.net.URI;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping(value = "/alunos", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping("/alunos")
 public class AlunoController {
-    private final AlunoRepository repository;
+    private final Map<Integer, Aluno> alunos = new ConcurrentHashMap<>();
 
-    public AlunoController(AlunoRepository repository) {
-        this.repository = repository;
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Aluno> cadastrar(@Valid @RequestBody Aluno aluno) {
-        if (!repository.cadastrar(aluno)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um aluno com esse id");
+    @PostMapping
+    public ResponseEntity<Aluno> cadastrar(@RequestBody Aluno aluno) {
+        if (alunos.putIfAbsent(aluno.getId(), aluno) != null) {
+            return ResponseEntity.status(409).build();
         }
-        return ResponseEntity.created(URI.create("/alunos/" + aluno.id())).body(aluno);
+        return ResponseEntity.created(URI.create("/alunos/" + aluno.getId())).body(aluno);
     }
 
     @GetMapping("/{id}")
-    public Aluno consultar(@PathVariable int id) {
-        if (id <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id deve ser positivo");
+    public ResponseEntity<Aluno> consultar(@PathVariable int id) {
+        Aluno aluno = alunos.get(id);
+        if (aluno == null) {
+            return ResponseEntity.notFound().build();
         }
-        return repository.buscar(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado"));
+        return ResponseEntity.ok(aluno);
     }
 }

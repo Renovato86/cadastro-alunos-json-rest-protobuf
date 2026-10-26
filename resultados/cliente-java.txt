@@ -1,4 +1,0 @@
-Cliente Java consumindo o servidor local em 25/10/2026.
-POST /alunos -> 201 {"id":2048,"nome":"Ana Silva","curso":"Engenharia de Software"}
-GET /alunos/2048 -> 200 {"id":2048,"nome":"Ana Silva","curso":"Engenharia de Software"}
-Objeto reconstruído com Jackson: Aluno[id=2048, nome=Ana Silva, curso=Engenharia de Software]
