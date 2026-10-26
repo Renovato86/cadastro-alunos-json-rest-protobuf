@@ -1,5 +1,3 @@
-package br.edu.atividade.alunos;
-
 public class Aluno {
     private int id;
     private String nome;

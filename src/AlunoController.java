@@ -1,5 +1,3 @@
-package br.edu.atividade.alunos;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

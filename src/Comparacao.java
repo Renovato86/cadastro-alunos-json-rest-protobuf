@@ -1,10 +1,7 @@
-package br.edu.atividade.alunos;
-
-import br.edu.atividade.alunos.proto.AlunoProtos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 
-public class SerializacaoDemo {
+public class Comparacao {
     public static void main(String[] args) throws Exception {
         Aluno aluno = new Aluno(1024, "Ana Silva", "Engenharia de Software");
         ObjectMapper mapper = new ObjectMapper();
