@@ -1,57 +1,37 @@
-# Cadastro de alunos com JSON, REST e Protobuf
+# Cadastro de alunos
 
-Projeto em Java com Spring Boot. O aluno tem os campos `id`, `nome` e `curso`.
-
-O código fica em uma única pasta, `src`:
-
-```text
-src/
-  Aluno.java
-  AlunoController.java
-  Aplicacao.java
-  Comparacao.java
-  aluno.proto
-  application.properties
-```
-
-`Aluno` guarda os dados, `AlunoController` recebe as requisições, `Aplicacao` inicia o servidor e `Comparacao` demonstra JSON e Protobuf.
+A pasta `alunos` contém o código: `Aluno.java` guarda os dados, `Servidor.java` cadastra e consulta, e `Comparacao.java` compara JSON e Protobuf. O contrato é `aluno.proto`.
 
 ## Executar
 
-É necessário JDK 17 a 25. O projeto foi executado com JDK 25. Na primeira execução é preciso ter internet para baixar as dependências. Os arquivos `mvnw`, `mvnw.cmd` e a pasta `.mvn` permitem executar o Maven sem instalação separada. A pasta `target` aparece automaticamente ao compilar e guarda os arquivos gerados.
+É necessário Java 17 a 25 e Maven. Os comandos abaixo são executados na pasta do projeto. A primeira compilação precisa de internet para baixar as bibliotecas.
 
-No terminal, dentro da pasta do projeto:
-
-```powershell
-.\mvnw.cmd clean package
-.\mvnw.cmd spring-boot:run
+```text
+mvn clean package
+mvn spring-boot:run
 ```
 
-O servidor fica em `http://localhost:8080`. Os alunos ficam guardados em memória e são perdidos quando o programa é encerrado. Use `Ctrl+C` para parar.
+O servidor abre em `http://localhost:8080`. Os dados ficam na memória e somem ao encerrar. Para parar, use Ctrl+C.
 
-## Testar a API
+Em outro terminal, teste com curl:
 
-Com o servidor aberto, execute em outro terminal na pasta do projeto:
-
-```powershell
+```text
 curl.exe -i -X POST http://localhost:8080/alunos -H "Content-Type: application/json" --data-binary "@aluno.json"
 curl.exe -i http://localhost:8080/alunos/1024
 curl.exe -i http://localhost:8080/alunos/999999
 ```
 
-O primeiro comando cadastra o aluno e retorna **201**. O segundo consulta o aluno e retorna **200** com seus dados em JSON. O terceiro retorna **404**, pois esse ID não está cadastrado. Repetir um cadastro com o mesmo ID retorna **409**, para evitar duplicidade.
+Os resultados são **201** para cadastro novo, **200** para consulta e **404** para aluno inexistente. Usar novamente o mesmo ID substitui os dados e retorna 200. Em Linux/macOS, use `curl` no lugar de `curl.exe`.
 
-No Linux/macOS, use `sh ./mvnw` no lugar de `.\mvnw.cmd` e `curl` no lugar de `curl.exe`.
+## Comparação
 
-## JSON e Protobuf
+Não precisa deixar o servidor aberto para executar:
 
-Para executar a conversão e a comparação, sem precisar iniciar o servidor:
-
-```powershell
-.\mvnw.cmd compile exec:java "-Dexec.mainClass=Comparacao"
+```text
+mvn compile exec:java "-Dexec.mainClass=alunos.Comparacao"
 ```
 
-O programa cria um aluno, converte para JSON com Jackson e recupera o objeto a partir desse JSON. Depois serializa o mesmo aluno em Protobuf e conta os bytes dos dois formatos.
+Jackson transforma o aluno em JSON e recupera o objeto. O Maven gera a classe Java do contrato Protobuf durante a compilação, dentro de `target/gerado`. A pasta `target` é criada automaticamente e contém os arquivos compilados.
 
 JSON gerado:
 
@@ -59,18 +39,12 @@ JSON gerado:
 {"id":1024,"nome":"Ana Silva","curso":"Engenharia de Software"}
 ```
 
-Objeto recuperado: ID 1024, nome Ana Silva, curso Engenharia de Software.
-
-O contrato está em `src/aluno.proto`. Na compilação, o Maven executa o compilador Protobuf e gera a classe `AlunoProtos` em `target/gerado/AlunoProtos.java`.
-
-| Comparação | JSON | Protobuf |
+| Critério | JSON | Protobuf |
 | --- | --- | --- |
-| Legibilidade | Texto que pode ser lido diretamente | Binário, precisa de ferramentas para interpretar |
-| Tamanho do aluno usado no exemplo | 63 bytes | 38 bytes |
-| Esquema | Não exige um arquivo de esquema separado | Usa o contrato definido no arquivo `.proto` |
+| Legibilidade | Texto legível | Binário, exige ferramentas |
+| Tamanho deste aluno | 63 bytes | 38 bytes |
+| Esquema | Não exige arquivo de esquema separado | Usa o arquivo `.proto` |
 
-A medição considera o JSON compacto em UTF-8 e os bytes binários do Protobuf, sem os cabeçalhos HTTP. Os tamanhos podem mudar conforme os dados.
+A contagem usa JSON compacto em UTF-8 e Protobuf binário, sem cabeçalhos HTTP. O tamanho varia conforme os dados.
 
-JSON é útil em APIs REST quando a facilidade de leitura e integração é mais importante, por exemplo em aplicações usadas por navegadores. Protobuf pode ser útil quando os sistemas compartilham um contrato e precisam reduzir o volume de dados transmitidos.
-
-Nesta atividade, a API troca JSON. Protobuf é usado na comparação de serialização. Uma API REST também pode usar Protobuf, desde que cliente e servidor estejam preparados para esse formato.
+JSON é útil em APIs REST pela facilidade de leitura e integração. Protobuf pode ser útil quando os sistemas compartilham o contrato e precisam transmitir menos bytes. Nesta atividade a API usa JSON, e Protobuf é usado na comparação.

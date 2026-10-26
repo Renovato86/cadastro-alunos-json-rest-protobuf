@@ -31,13 +31,7 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <includes><include>application.properties</include></includes>
-            </resource>
-        </resources>
+        <sourceDirectory>${project.basedir}</sourceDirectory>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -47,11 +41,18 @@
         </extensions>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <includes><include>alunos/*.java</include></includes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <protoSourceRoot>${project.basedir}/src</protoSourceRoot>
+                    <protoSourceRoot>${project.basedir}/alunos</protoSourceRoot>
                     <outputDirectory>${project.build.directory}/gerado</outputDirectory>
                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                 </configuration>
@@ -65,7 +66,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>Aplicacao</mainClass>
+                    <mainClass>alunos.Servidor</mainClass>
                 </configuration>
             </plugin>
             <plugin>

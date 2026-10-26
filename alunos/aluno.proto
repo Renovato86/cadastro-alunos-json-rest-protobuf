@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+package alunos;
 option java_outer_classname = "AlunoProtos";
 
 message Aluno {
